@@ -5,6 +5,16 @@ CRUD OPearions: Abrar
 TESTING : Faiyaz
 Git and Setup:Naveed
 
+# Project: Final Database Exam
+
+## Duties and Responsibilities
+- *CRUD Operations:* Abrar
+- *Testing:* Faiyaz
+- *Git and Setup:* Naveed
+
+## SQL Table Definitions
+
+```sql
 -- Create table for authors
 CREATE TABLE authors (
     authorid SERIAL PRIMARY KEY,
@@ -66,8 +76,7 @@ CREATE TABLE sales (
     amount DECIMAL(10, 2),
     FOREIGN KEY (book_id) REFERENCES books(book_id),
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
-## Getting started
-
+);
 
 #CRUD OPERATION
 import { Entity, Column, PrimaryColumn } from "typeorm";
