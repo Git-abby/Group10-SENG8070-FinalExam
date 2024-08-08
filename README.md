@@ -5,7 +5,6 @@ CRUD OPearions: Abrar
 TESTING : Faiyaz
 Git and Setup:Naveed
 
-# Project: Final Database Exam
 
 ## Duties and Responsibilities
 - *CRUD Operations:* Abrar
