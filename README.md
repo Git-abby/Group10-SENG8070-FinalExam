@@ -375,3 +375,130 @@ docker-compose up -d
 ```bash
 docker-compose up -d --build
 ```
+import { getRepository } from "typeorm";
+import { Author } from "./Author";
+import { Genre } from "./Genre";
+import { Publisher } from "./Publisher";
+import { Book } from "./Book";
+import { Customer } from "./Customer";
+import { Review } from "./Review";
+import { Sale } from "./Sale";
+
+describe("Bookstore Database Entities", () => {
+  it("should create and retrieve an author", async () => {
+    const authorRepo = getRepository(Author);
+    const author = new Author();
+    author.name = "George Orwell";
+
+    const savedAuthor = await authorRepo.save(author);
+    expect(savedAuthor.authorid).toBeDefined();
+    expect(savedAuthor.name).toBe("George Orwell");
+
+    const foundAuthor = await authorRepo.findOne(savedAuthor.authorid);
+    expect(foundAuthor).toEqual(savedAuthor);
+  });
+
+  it("should create and retrieve a genre", async () => {
+    const genreRepo = getRepository(Genre);
+    const genre = new Genre();
+    genre.name = "Dystopian";
+
+    const savedGenre = await genreRepo.save(genre);
+    expect(savedGenre.genre_id).toBeDefined();
+    expect(savedGenre.name).toBe("Dystopian");
+
+    const foundGenre = await genreRepo.findOne(savedGenre.genre_id);
+    expect(foundGenre).toEqual(savedGenre);
+  });
+
+  it("should create and retrieve a publisher", async () => {
+    const publisherRepo = getRepository(Publisher);
+    const publisher = new Publisher();
+    publisher.name = "Penguin Books";
+
+    const savedPublisher = await publisherRepo.save(publisher);
+    expect(savedPublisher.publisher_id).toBeDefined();
+    expect(savedPublisher.name).toBe("Penguin Books");
+
+    const foundPublisher = await publisherRepo.findOne(savedPublisher.publisher_id);
+    expect(foundPublisher).toEqual(savedPublisher);
+  });
+
+  it("should create and retrieve a book", async () => {
+    const authorRepo = getRepository(Author);
+    const genreRepo = getRepository(Genre);
+    const publisherRepo = getRepository(Publisher);
+    const bookRepo = getRepository(Book);
+
+    const author = await authorRepo.save({ name: "George Orwell" });
+    const genre = await genreRepo.save({ name: "Dystopian" });
+    const publisher = await publisherRepo.save({ name: "Penguin Books" });
+
+    const book = new Book();
+    book.title = "1984";
+    book.author = author;
+    book.genre = genre;
+    book.publisher = publisher;
+    book.published_date = new Date("1949-06-08");
+    book.rating = 4.8;
+
+    const savedBook = await bookRepo.save(book);
+    expect(savedBook.book_id).toBeDefined();
+    expect(savedBook.title).toBe("1984");
+
+    const foundBook = await bookRepo.findOne(savedBook.book_id, { relations: ["author", "genre", "publisher"] });
+    expect(foundBook).toEqual(savedBook);
+  });
+
+  it("should create and retrieve a customer", async () => {
+    const customerRepo = getRepository(Customer);
+    const customer = new Customer();
+    customer.name = "John Doe";
+    customer.email = "johndoe@example.com";
+    customer.join_date = new Date("2024-01-01");
+    customer.total_spent = 100.0;
+
+    const savedCustomer = await customerRepo.save(customer);
+    expect(savedCustomer.customer_id).toBeDefined();
+    expect(savedCustomer.name).toBe("John Doe");
+
+    const foundCustomer = await customerRepo.findOne(savedCustomer.customer_id);
+    expect(foundCustomer).toEqual(savedCustomer);
+  });
+
+  it("should create and retrieve a review", async () => {
+    const bookRepo = getRepository(Book);
+    const customerRepo = getRepository(Customer);
+    const reviewRepo = getRepository(Review);
+
+    const book = await bookRepo.save({ title: "1984", author: null, genre: null, publisher: null });
+    const customer = await customerRepo.save({ name: "John Doe", email: "johndoe@example.com", join_date: new Date("2024-01-01"), total_spent: 100.0 });
+
+    const review = new Review();
+    review.book = book;
+    review.customer = customer;
+    review.review_date = new Date("2024-01-02");
+    review.rating = 4.5;
+    review.comment = "A must-read classic!";
+
+    const savedReview = await reviewRepo.save(review);
+    expect(savedReview.review_id).toBeDefined();
+    expect(savedReview.comment).toBe("A must-read classic!");
+
+    const foundReview = await reviewRepo.findOne(savedReview.review_id, { relations: ["book", "customer"] });
+    expect(foundReview).toEqual(savedReview);
+  });
+
+  it("should create and retrieve a sale", async () => {
+    const bookRepo = getRepository(Book);
+    const customerRepo = getRepository(Customer);
+    const saleRepo = getRepository(Sale);
+
+    const book = await bookRepo.save({ title: "1984", author: null, genre: null, publisher: null });
+    const customer = await customerRepo.save({ name: "John Doe", email: "johndoe@example.com", join_date: new Date("2024-01-01"), total_spent: 100.0 });
+
+    const sale = new Sale();
+    sale.book = book;
+    sale.customer = customer;
+    sale.sale_date = new Date("2024-01-03");
+    sale
